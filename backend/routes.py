@@ -1,8 +1,23 @@
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required, create_access_token
+from werkzeug.security import check_password_hash
 from backend.models import User, Category, Subcategory, Product, Service, Inquiry, ProductImage
 from backend.extensions import db
 
 api_blueprint = Blueprint('api', __name__)
+
+@api_blueprint.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    if not data or not data.get('username') or not data.get('password'):
+        return jsonify({"error": "Username and password are required"}), 400
+
+    user = User.query.filter_by(username=data['username']).first()
+    if not user or not check_password_hash(user.password_hash, data['password']):
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    access_token = create_access_token(identity=user.id)
+    return jsonify({"access_token": access_token}), 200
 
 # User Routes
 @api_blueprint.route('/users', methods=['GET'])
@@ -35,6 +50,7 @@ def add_user():
         return jsonify({"error": "Failed to add user"}), 500
 
 @api_blueprint.route('/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
 def update_user(user_id):
     try:
         data = request.json
@@ -56,6 +72,7 @@ def update_user(user_id):
         return jsonify({"error": "Failed to update user"}), 500
 
 @api_blueprint.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(user_id):
     try:
         user = User.query.get(user_id)
@@ -84,6 +101,7 @@ def get_category(category_id):
     return jsonify(category.serialize())
 
 @api_blueprint.route('/categories', methods=['POST'])
+@jwt_required()
 def add_category():
     try:
         data = request.json
@@ -99,6 +117,7 @@ def add_category():
         return jsonify({"error": "Failed to add category"}), 500
 
 @api_blueprint.route('/categories/<int:category_id>', methods=['PUT'])
+@jwt_required()
 def update_category(category_id):
     try:
         data = request.json
@@ -116,6 +135,7 @@ def update_category(category_id):
         return jsonify({"error": "Failed to update category"}), 500
 
 @api_blueprint.route('/categories/<int:category_id>', methods=['DELETE'])
+@jwt_required()
 def delete_category(category_id):
     try:
         category = Category.query.get(category_id)
@@ -144,6 +164,7 @@ def get_subcategory(subcategory_id):
     return jsonify(subcategory.serialize())
 
 @api_blueprint.route('/subcategories', methods=['POST'])
+@jwt_required()
 def add_subcategory():
     try:
         data = request.json
@@ -159,6 +180,7 @@ def add_subcategory():
         return jsonify({"error": "Failed to add subcategory"}), 500
 
 @api_blueprint.route('/subcategories/<int:subcategory_id>', methods=['PUT'])
+@jwt_required()
 def update_subcategory(subcategory_id):
     try:
         data = request.json
@@ -178,6 +200,7 @@ def update_subcategory(subcategory_id):
         return jsonify({"error": "Failed to update subcategory"}), 500
 
 @api_blueprint.route('/subcategories/<int:subcategory_id>', methods=['DELETE'])
+@jwt_required()
 def delete_subcategory(subcategory_id):
     try:
         subcategory = Subcategory.query.get(subcategory_id)
@@ -206,6 +229,7 @@ def get_product(product_id):
     return jsonify(product.serialize())
 
 @api_blueprint.route('/products', methods=['POST'])
+@jwt_required()
 def add_product():
     try:
         data = request.json
@@ -227,6 +251,7 @@ def add_product():
         return jsonify({"error": "Failed to add product"}), 500
 
 @api_blueprint.route('/products/<int:product_id>', methods=['PUT'])
+@jwt_required()
 def update_product(product_id):
     try:
         data = request.json
@@ -252,6 +277,7 @@ def update_product(product_id):
         return jsonify({"error": "Failed to update product"}), 500
 
 @api_blueprint.route('/products/<int:product_id>', methods=['DELETE'])
+@jwt_required()
 def delete_product(product_id):
     try:
         product = Product.query.get(product_id)
@@ -280,6 +306,7 @@ def get_product_image(product_image_id):
     return jsonify(product_image.serialize())
 
 @api_blueprint.route('/product_images', methods=['POST'])
+@jwt_required()
 def add_product_image():
     try:
         data = request.json
@@ -298,6 +325,7 @@ def add_product_image():
         return jsonify({"error": "Failed to add product_image"}), 500
 
 @api_blueprint.route('/product_images/<int:product_image_id>', methods=['PUT'])
+@jwt_required()
 def update_product_image(product_image_id):
     try:
         data = request.json
@@ -317,6 +345,7 @@ def update_product_image(product_image_id):
         return jsonify({"error": "Failed to update product_image"}), 500
 
 @api_blueprint.route('/product_images/<int:product_image_id>', methods=['DELETE'])
+@jwt_required()
 def delete_product_image(product_image_id):
     try:
         product_image = ProductImage.query.get(product_image_id)
@@ -345,6 +374,7 @@ def get_service(service_id):
     return jsonify(service.serialize())
 
 @api_blueprint.route('/services', methods=['POST'])
+@jwt_required()
 def add_service():
     try:
         data = request.json
@@ -364,6 +394,7 @@ def add_service():
         return jsonify({"error": "Failed to add service"}), 500
 
 @api_blueprint.route('/services/<int:service_id>', methods=['PUT'])
+@jwt_required()
 def update_service(service_id):
     try:
         data = request.json
@@ -385,6 +416,7 @@ def update_service(service_id):
         return jsonify({"error": "Failed to update service"}), 500
 
 @api_blueprint.route('/services/<int:service_id>', methods=['DELETE'])
+@jwt_required()
 def delete_service(service_id):
     try:
         service = Service.query.get(service_id)
@@ -397,3 +429,70 @@ def delete_service(service_id):
     except Exception as e:
         print(f"Error deleting service: {e}")
         return jsonify({"error": "Failed to delete service"}), 500
+    
+@api_blueprint.route('/inquiries', methods=['GET'])
+def get_inquiries():
+    inquiries = Inquiry.query.all()
+    inquiries_list = [inquiry.serialize() for inquiry in inquiries]
+    return jsonify(inquiries_list)
+
+@api_blueprint.route('/inquiries/<int:inquiry_id>', methods=['GET'])
+def get_inquiry(inquiry_id):
+    inquiry = Inquiry.query.get(inquiry_id)
+    if not inquiry:
+        return jsonify({"error": "Inquiry not found"}), 404
+    return jsonify(inquiry.serialize())
+
+@api_blueprint.route('/inquiries', methods=['POST'])
+def add_inquiry():
+    try:
+        data = request.json
+        if 'name' not in data or 'email' not in data or 'city' not in data or 'phone' not in data or 'message' not in data or 'product_id' not in data:
+            return jsonify({"error": "Name, email, city, phone, message, and product_id are required"}), 400
+
+        new_inquiry = Inquiry(
+            name=data['name'],
+            email=data['email'],
+            city=data['city'],
+            phone=data['phone'],
+            message=data['message'],
+            product_id=data['product_id']
+        )
+        db.session.add(new_inquiry)
+        db.session.commit()
+        return jsonify({"message": "Inquiry added successfully!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@api_blueprint.route('/inquiries/<int:inquiry_id>', methods=['PUT'])
+def update_inquiry(inquiry_id):
+    try:
+        inquiry = Inquiry.query.get(inquiry_id)
+        if not inquiry:
+            return jsonify({"error": "Inquiry not found"}), 404
+
+        data = request.json
+        inquiry.name = data.get('name', inquiry.name)
+        inquiry.email = data.get('email', inquiry.email)
+        inquiry.city = data.get('city', inquiry.city)
+        inquiry.phone = data.get('phone', inquiry.phone)
+        inquiry.message = data.get('message', inquiry.message)
+        inquiry.product_id = data.get('product_id', inquiry.product_id)
+
+        db.session.commit()
+        return jsonify({"message": "Inquiry updated successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@api_blueprint.route('/inquiries/<int:inquiry_id>', methods=['DELETE'])
+def delete_inquiry(inquiry_id):
+    try:
+        inquiry = Inquiry.query.get(inquiry_id)
+        if not inquiry:
+            return jsonify({"error": "Inquiry not found"}), 404
+
+        db.session.delete(inquiry)
+        db.session.commit()
+        return jsonify({"message": "Inquiry deleted successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
