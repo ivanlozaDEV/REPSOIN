@@ -1,11 +1,12 @@
 const getState = ({ getStore, getActions, setStore }) => {
-
   return {
     store: {
       saludo: "Hola",
       users: [],
       categories: [],
+      subcategories: [],
       products: [],
+      services: [],
       productImages: [],
       inquiries: [],
     },
@@ -33,9 +34,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/users`);
           const data = await response.json();
-          if (response.ok) {
-            setStore({ users: data });
-          }
+          setStore({ users: data });
         } catch (error) {
           console.log(error);
         }
@@ -96,9 +95,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/categories`);
           const data = await response.json();
-          if (response.ok) {
-            setStore({ categories: data });
-          }
+          setStore({ categories: data });
         } catch (error) {
           console.log(error);
         }
@@ -136,6 +133,67 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
+      // Subcategory Actions
+      createSubcategory: async (subcategory) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subcategory),
+          });
+          if (!response.ok) {
+            return false;
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      getSubcategories: async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories`);
+          const data = await response.json();
+          setStore({ subcategories: data });
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      updateSubcategory: async (subcategoryId, subcategory) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories/${subcategoryId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subcategory),
+          });
+          if (!response.ok) {
+            return false;
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+      deleteSubcategory: async (subcategoryId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories/${subcategoryId}`, {
+            method: "DELETE",
+          });
+          if (!response.ok) {
+            return false;
+          }
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.log(error);
+        }
+      },
+
       // Product Actions
       createProduct: async (product) => {
         try {
@@ -159,9 +217,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/products`);
           const data = await response.json();
-          if (response.ok) {
-            setStore({ products: data });
-          }
+          setStore({ products: data });
         } catch (error) {
           console.log(error);
         }
@@ -222,9 +278,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/product_images`);
           const data = await response.json();
-          if (response.ok) {
-            setStore({ productImages: data });
-          }
+          setStore({ productImages: data });
         } catch (error) {
           console.log(error);
         }
@@ -262,15 +316,15 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
       },
 
-      // Inquiry Actions
-      createInquiry: async (inquiry) => {
+      // Service Actions
+      createService: async (service) => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/inquiries`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(inquiry),
+            body: JSON.stringify(service),
           });
           if (!response.ok) {
             return false;
@@ -281,25 +335,23 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
-      getInquiries: async () => {
+      getServices: async () => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/inquiries`);
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services`);
           const data = await response.json();
-          if (response.ok) {
-            setStore({ inquiries: data });
-          }
+          setStore({ services: data });
         } catch (error) {
           console.log(error);
         }
       },
-      updateInquiry: async (inquiryId, inquiry) => {
+      updateService: async (serviceId, service) => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/inquiries/${inquiryId}`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services/${serviceId}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(inquiry),
+            body: JSON.stringify(service),
           });
           if (!response.ok) {
             return false;
@@ -310,9 +362,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
-      deleteInquiry: async (inquiryId) => {
+      deleteService: async (serviceId) => {
         try {
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/inquiries/${inquiryId}`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services/${serviceId}`, {
             method: "DELETE",
           });
           if (!response.ok) {

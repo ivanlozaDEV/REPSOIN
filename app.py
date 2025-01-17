@@ -6,7 +6,7 @@ from backend.routes import api_blueprint
 from backend.config import Config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from backend.models import User, Category, Product, ProductImage, Inquiry  # Asegúrate de tener el modelo definido en models.py
+from backend.models import User, Category, Subcategory, Product, ProductImage, Service, Inquiry  # Asegúrate de tener el modelo definido en models.py
 from dotenv import load_dotenv
 from sqlalchemy import text
 import os
@@ -44,8 +44,10 @@ def create_app():
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
     admin.add_view(ModelView(User, db.session))
     admin.add_view(ModelView(Category, db.session)) 
-    admin.add_view(ModelView(Product, db.session))   # Agrega el modelo Item al panel de administración
+    admin.add_view(ModelView(Subcategory, db.session)) 
+    admin.add_view(ModelView(Product, db.session))  
     admin.add_view(ModelView(ProductImage, db.session)) 
+    admin.add_view(ModelView(Service, db.session))
     admin.add_view(ModelView(Inquiry, db.session)) 
 
 
