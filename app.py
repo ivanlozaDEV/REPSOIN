@@ -9,6 +9,7 @@ from flask_admin.contrib.sqla import ModelView
 from backend.models import User, Category, Subcategory, Product, ProductImage, Service, Inquiry  # Asegúrate de tener el modelo definido en models.py
 from dotenv import load_dotenv
 from sqlalchemy import text
+from flask_jwt_extended import JWTManager
 import os
 
 # Cargar variables de entorno desde el archivo .env
@@ -16,6 +17,15 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__, static_folder='dist', static_url_path='')  # Cambia a 'dist'
+
+    # Set the secret key to sign the JWTs
+    app.config['JWT_SECRET_KEY'] = 'secret_key'
+    # Specify where the JWT token will be located (e.g., headers, cookies)
+    app.config['JWT_TOKEN_LOCATION'] = ['headers']
+
+    # Initialize the JWT manager
+    jwt = JWTManager(app)
+
 
     app.config.from_object(Config)
 

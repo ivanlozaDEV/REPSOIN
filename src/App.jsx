@@ -4,9 +4,11 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "../src/store/appContext.jsx";
 
+
 import Home from "./pages/home.jsx";
 import Navbar from "./components/navbar.jsx";
 import Footer from "./components/footer.jsx";
+import Dashboard from "./pages/dashboard.jsx";
 
 function App({ Component, pageProps }) {
   return (
@@ -17,6 +19,7 @@ function App({ Component, pageProps }) {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route element={<h1>Not found!</h1>} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Footer />
         </BrowserRouter>
