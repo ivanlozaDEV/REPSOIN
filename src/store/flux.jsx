@@ -13,6 +13,8 @@ const getState = ({ getStore, getActions, setStore }) => {
     actions: {
 
       login: async (credentials) => {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        console.log("API URL:", apiUrl); // A
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
             method: "POST",
@@ -26,7 +28,6 @@ const getState = ({ getStore, getActions, setStore }) => {
             return { success: false, error: errorData.error };
           }
           const data = await response.json();
-          console.log("Login successful, token received:", data.access_token);
           localStorage.setItem("token", data.access_token);
           return { success: true };
         } catch (error) {
@@ -327,12 +328,15 @@ const getState = ({ getStore, getActions, setStore }) => {
             body: JSON.stringify(productImage),
           });
           if (!response.ok) {
-            return false;
+            const errorData = await response.json();
+            console.error("Error creating product image:", errorData);
+            throw new Error(errorData.message || 'Failed to create product image');
           }
           const data = await response.json();
           return data;
         } catch (error) {
-          console.log(error);
+          console.error("Error creating product image:", error);
+          throw error;
         }
       },
       getProductImages: async () => {

@@ -56,13 +56,6 @@ export default function Dashboard() {
             </CardBody>
           </Card>
         </Tab>
-        <Tab key="erd" title="ERD">
-          <Card>
-            <CardBody>
-              <ERDiagram />
-            </CardBody>
-          </Card>
-        </Tab>
       </Tabs>
     </div>
   );

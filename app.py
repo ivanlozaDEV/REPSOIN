@@ -29,6 +29,8 @@ def create_app():
 
     app.config.from_object(Config)
 
+
+
     # Inicializar la base de datos
     db.init_app(app)
 

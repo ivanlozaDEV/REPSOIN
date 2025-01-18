@@ -12,6 +12,7 @@
   "dependencies": {
     "@nextui-org/react": "^2.4.8",
     "dotenv": "^16.4.5",
+    "firebase": "^11.2.0",
     "framer-motion": "^11.11.9",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
