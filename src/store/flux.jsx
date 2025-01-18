@@ -26,6 +26,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             return { success: false, error: errorData.error };
           }
           const data = await response.json();
+          console.log("Login successful, token received:", data.access_token);
           localStorage.setItem("token", data.access_token);
           return { success: true };
         } catch (error) {
@@ -109,17 +110,21 @@ const getState = ({ getStore, getActions, setStore }) => {
             headers: {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
-              
             },
-            body: JSON.stringify(category),
+            body: JSON.stringify({ name: category.name }),
           });
+    
           if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Error creating category:", errorData);
             return false;
           }
+    
           const data = await response.json();
           return data;
         } catch (error) {
-          console.log(error);
+          console.error("Error creating category:", error);
+          return false;
         }
       },
       getCategories: async () => {
