@@ -1,8 +1,8 @@
-"""Initial migration
+"""empty message
 
-Revision ID: 28be860261a6
+Revision ID: 75030c5899a4
 Revises: 
-Create Date: 2025-01-16 19:19:53.235242
+Create Date: 2025-01-17 21:24:24.846922
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '28be860261a6'
+revision = '75030c5899a4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,17 +21,29 @@ def upgrade():
     op.create_table('categories',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('services',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('price', sa.Float(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=50), nullable=False),
-    sa.Column('password_hash', sa.String(length=128), nullable=False),
+    sa.Column('password_hash', sa.String(length=300), nullable=False),
     sa.Column('role', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('username')
+    )
+    op.create_table('subcategories',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('category_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('products',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -39,10 +51,8 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
     sa.Column('stock', sa.Integer(), nullable=False),
-    sa.Column('category_id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ),
+    sa.Column('subcategory_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['subcategory_id'], ['subcategories.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('inquiries',
@@ -59,7 +69,7 @@ def upgrade():
     )
     op.create_table('product_images',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('url', sa.String(length=200), nullable=False),
+    sa.Column('url', sa.String(length=255), nullable=False),
     sa.Column('product_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['product_id'], ['products.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -72,6 +82,8 @@ def downgrade():
     op.drop_table('product_images')
     op.drop_table('inquiries')
     op.drop_table('products')
+    op.drop_table('subcategories')
     op.drop_table('users')
+    op.drop_table('services')
     op.drop_table('categories')
     # ### end Alembic commands ###

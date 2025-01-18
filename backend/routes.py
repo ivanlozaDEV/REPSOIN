@@ -105,6 +105,7 @@ def get_category(category_id):
 def add_category():
     try:
         data = request.json
+        print("Received data:", data)
         if 'name' not in data:
             return jsonify({"error": "Name is required"}), 400
 
