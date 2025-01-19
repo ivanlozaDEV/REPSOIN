@@ -33,23 +33,23 @@ export default function Dashboard() {
 
   return (
     <div className="container mx-auto p-4 industrial-background">
-      <h1 className="text-3xl font-bold text-blue-800 mb-6">Admin Dashboard</h1>
+      <h1 className="text-3xl font-bold text-blue-800 mb-6">Panel del Administrador</h1>
       <Tabs aria-label="Dashboard sections">
-        <Tab key="categories" title="Categories">
+        <Tab key="categories" title="Categorías">
           <Card>
             <CardBody>
               <CategoryManager categories={store.categories} />
             </CardBody>
           </Card>
         </Tab>
-        <Tab key="subcategories" title="Subcategories">
+        <Tab key="subcategories" title="Subcategorías">
           <Card>
             <CardBody>
               <SubcategoryManager subcategories={store.subcategories} categories={store.categories} />
             </CardBody>
           </Card>
         </Tab>
-        <Tab key="products" title="Products">
+        <Tab key="products" title="Productos">
           <Card>
             <CardBody>
               <ProductManager products={store.products} categories={store.categories} subcategories={store.subcategories} />
