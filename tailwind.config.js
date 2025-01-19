@@ -9,7 +9,11 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      button: {
+        base: 'py-2 px-4 text-lg', // Example: padding and font size
+      },
+    },
   },
   darkMode: "class",
   plugins: [

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Context } from "../store/appContext";
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Select, SelectItem } from "@nextui-org/react";
+import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default function SubcategoryManager({ subcategories, categories }) {
   const { actions } = useContext(Context);
@@ -28,15 +29,16 @@ export default function SubcategoryManager({ subcategories, categories }) {
   };
 
   return (
-    <div>
-      <Button onClick={() => setIsOpen(true)} className="mb-4 bg-orange-500 text-white">
-        Add Subcategory
+    <div className="p-4">
+      <Button onClick={() => setIsOpen(true)} variant="ghost" className="mb-4 text-orange-500 text-sm px-3 py-1">
+        <Plus size={16} />
+        <span className="ml-1">Añadir Subcategoría</span>
       </Button>
-      <Table aria-label="Subcategories table">
+      <Table aria-label="Tabla de subcategorías" className="min-w-full">
         <TableHeader>
-          <TableColumn>NAME</TableColumn>
-          <TableColumn>CATEGORY</TableColumn>
-          <TableColumn>ACTIONS</TableColumn>
+          <TableColumn>NOMBRE</TableColumn>
+          <TableColumn>CATEGORÍA</TableColumn>
+          <TableColumn>ACCIONES</TableColumn>
         </TableHeader>
         <TableBody>
           {subcategories.map((subcategory) => (
@@ -44,17 +46,29 @@ export default function SubcategoryManager({ subcategories, categories }) {
               <TableCell>{subcategory.name}</TableCell>
               <TableCell>{categories.find(c => c.id === subcategory.category_id)?.name}</TableCell>
               <TableCell>
-                <Button onClick={() => {
-                  setEditingSubcategory(subcategory);
-                  setName(subcategory.name);
-                  setCategoryId(subcategory.category_id);
-                  setIsOpen(true);
-                }} className="mr-2 bg-blue-600 text-white">
-                  Edit
-                </Button>
-                <Button onClick={() => handleDelete(subcategory.id)} className="bg-red-500 text-white">
-                  Delete
-                </Button>
+                <div className="flex space-x-2">
+                  <Button 
+                    isIconOnly
+                    onClick={() => {
+                      setEditingSubcategory(subcategory);
+                      setName(subcategory.name);
+                      setCategoryId(subcategory.category_id);
+                      setIsOpen(true);
+                    }} 
+                    variant="ghost" 
+                    className="text-blue-600"
+                  >
+                    <Edit size={16} />
+                  </Button>
+                  <Button 
+                    isIconOnly
+                    onClick={() => handleDelete(subcategory.id)} 
+                    variant="ghost" 
+                    className="text-red-500"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
@@ -67,15 +81,15 @@ export default function SubcategoryManager({ subcategories, categories }) {
         setCategoryId('');
       }}>
         <ModalContent>
-          <ModalHeader>{editingSubcategory ? 'Edit Subcategory' : 'Add Subcategory'}</ModalHeader>
+          <ModalHeader>{editingSubcategory ? 'Editar Subcategoría' : 'Añadir Subcategoría'}</ModalHeader>
           <ModalBody>
             <Input
-              label="Name"
+              label="Nombre"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <Select
-              label="Category"
+              label="Categoría"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
             >
@@ -87,8 +101,8 @@ export default function SubcategoryManager({ subcategories, categories }) {
             </Select>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={handleSubmit} className="bg-orange-500 text-white">
-              {editingSubcategory ? 'Update' : 'Create'}
+            <Button onClick={handleSubmit} className="bg-orange-500 text-white text-sm px-3 py-1">
+              {editingSubcategory ? 'Actualizar' : 'Crear'}
             </Button>
           </ModalFooter>
         </ModalContent>
