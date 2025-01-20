@@ -1,71 +1,66 @@
 import React, { useState, useContext, useMemo } from 'react';
 import { Context } from "../store/appContext";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Select, SelectItem, Pagination } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Pagination } from "@nextui-org/react";
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
-export default function SubcategoryManager({ subcategories, categories }) {
+export default function CategoryManager({ categories }) {
   const { actions } = useContext(Context);
   const [isOpen, setIsOpen] = useState(false);
-  const [editingSubcategory, setEditingSubcategory] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
   const [name, setName] = useState('');
-  const [categoryId, setCategoryId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
 
-  const sortedSubcategories = useMemo(() => {
-    return [...subcategories].sort((a, b) => a.name.localeCompare(b.name));
-  }, [subcategories]);
+  const sortedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  }, [categories]);
 
-  const totalPages = Math.ceil(sortedSubcategories.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedCategories.length / itemsPerPage);
 
-  const currentSubcategories = useMemo(() => {
+  const currentCategories = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return sortedSubcategories.slice(start, start + itemsPerPage);
-  }, [sortedSubcategories, currentPage]);
+    return sortedCategories.slice(start, start + itemsPerPage);
+  }, [sortedCategories, currentPage]);
 
   const handleSubmit = async () => {
-    if (editingSubcategory) {
-      await actions.updateSubcategory(editingSubcategory.id, { name, category_id: categoryId });
+    if (editingCategory) {
+      await actions.updateCategory(editingCategory.id, { name });
     } else {
-      await actions.createSubcategory({ name, category_id: categoryId });
+      await actions.createCategory({ name });
     }
     setIsOpen(false);
-    setEditingSubcategory(null);
+    setEditingCategory(null);
     setName('');
-    setCategoryId('');
-    actions.getSubcategories();
+    actions.getCategories();
   };
 
   const handleDelete = async (id) => {
-    await actions.deleteSubcategory(id);
-    actions.getSubcategories();
+    await actions.deleteCategory(id);
+    actions.getCategories();
   };
 
   return (
     <div className="p-4">
       <Button onClick={() => setIsOpen(true)} variant="ghost" className="mb-4 text-orange-500 text-sm px-3 py-1">
         <Plus size={16} />
-        <span className="ml-1">Añadir Subcategoría</span>
+        <span className="ml-1">Añadir Categoría</span>
       </Button>
-      <Table aria-label="Tabla de subcategorías" className="min-w-full">
+      <Table aria-label="Tabla de categorías" className="min-w-full">
         <TableHeader>
           <TableColumn>NOMBRE</TableColumn>
-          <TableColumn>CATEGORÍA</TableColumn>
           <TableColumn>ACCIONES</TableColumn>
         </TableHeader>
         <TableBody>
-          {currentSubcategories.map((subcategory) => (
-            <TableRow key={subcategory.id}>
-              <TableCell>{subcategory.name}</TableCell>
-              <TableCell>{categories.find(c => c.id === subcategory.category_id)?.name}</TableCell>
+          {currentCategories.map((category) => (
+            <TableRow key={category.id}>
+              <TableCell>{category.name}</TableCell>
               <TableCell>
                 <div className="flex space-x-2">
                   <Button 
                     isIconOnly
                     onClick={() => {
-                      setEditingSubcategory(subcategory);
-                      setName(subcategory.name);
-                      setCategoryId(subcategory.category_id);
+                      setEditingCategory(category);
+                      setName(category.name);
                       setIsOpen(true);
                     }} 
                     variant="ghost" 
@@ -75,7 +70,7 @@ export default function SubcategoryManager({ subcategories, categories }) {
                   </Button>
                   <Button 
                     isIconOnly
-                    onClick={() => handleDelete(subcategory.id)} 
+                    onClick={() => handleDelete(category.id)} 
                     variant="ghost" 
                     className="text-red-500"
                   >
@@ -96,33 +91,21 @@ export default function SubcategoryManager({ subcategories, categories }) {
       </div>
       <Modal isOpen={isOpen} onClose={() => {
         setIsOpen(false);
-        setEditingSubcategory(null);
+        setEditingCategory(null);
         setName('');
-        setCategoryId('');
       }}>
         <ModalContent>
-          <ModalHeader>{editingSubcategory ? 'Editar Subcategoría' : 'Añadir Subcategoría'}</ModalHeader>
+          <ModalHeader>{editingCategory ? 'Editar Categoría' : 'Añadir Categoría'}</ModalHeader>
           <ModalBody>
             <Input
               label="Nombre"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
-            <Select
-              label="Categoría"
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-            >
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </Select>
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleSubmit} className="bg-orange-500 text-white text-sm px-3 py-1">
-              {editingSubcategory ? 'Actualizar' : 'Crear'}
+              {editingCategory ? 'Actualizar' : 'Crear'}
             </Button>
           </ModalFooter>
         </ModalContent>
