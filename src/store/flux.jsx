@@ -112,7 +112,10 @@ const getState = ({ getStore, getActions, setStore }) => {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ name: category.name }),
+            body: JSON.stringify({
+              name: category.name,
+              image_url: category.image_url, // Ensure this line is present
+            }),
           });
     
           if (!response.ok) {
@@ -177,26 +180,35 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       // Subcategory Actions
-      createSubcategory: async (subcategory) => {
-        try {
-          const token = localStorage.getItem("token");
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(subcategory),
-          });
-          if (!response.ok) {
-            return false;
+      createSubcategory: async (subcategory) =>
+        {
+          try {
+            const token = localStorage.getItem("token")
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                name: subcategory.name,
+                category_id: subcategory.category_id,
+                image_url: subcategory.image_url,
+              }),
+            })
+            if (!response.ok) {
+              const errorData = await response.json()
+              console.error("Error creating subcategory:", errorData)
+              throw new Error(errorData.message || "Failed to create subcategory")
+            }
+            const data = await response.json()
+            return data;
+          } catch (error) {
+            console.error("Error creating subcategory:", error)
+            throw error
           }
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.log(error);
-        }
-      },
+        },
+
       getSubcategories: async () => {
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories`);
@@ -206,26 +218,35 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
-      updateSubcategory: async (subcategoryId, subcategory) => {
-        try {
-          const token = localStorage.getItem("token");
-          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories/${subcategoryId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(subcategory),
-          });
-          if (!response.ok) {
-            return false;
+      updateSubcategory: async (subcategoryId, subcategory) =>
+        {
+          try {
+            const token = localStorage.getItem("token")
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories/${subcategoryId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                name: subcategory.name,
+                category_id: subcategory.category_id,
+                image_url: subcategory.image_url,
+              }),
+            })
+            if (!response.ok) {
+              const errorData = await response.json()
+              console.error("Error updating subcategory:", errorData)
+              throw new Error(errorData.message || "Failed to update subcategory")
+            }
+            const data = await response.json()
+            return data;
+          } catch (error) {
+            console.error("Error updating subcategory:", error)
+            throw error
           }
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.log(error);
         }
-      },
+        ,
       deleteSubcategory: async (subcategoryId) => {
         try {
           const token = localStorage.getItem("token");
@@ -396,7 +417,11 @@ const getState = ({ getStore, getActions, setStore }) => {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(service),
+            body: JSON.stringify({
+              name: service.name,
+              description: service.description,
+              image_url: service.image_url,
+            }),
           });
           if (!response.ok) {
             return false;
@@ -425,7 +450,11 @@ const getState = ({ getStore, getActions, setStore }) => {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify(service),
+            body: JSON.stringify({
+              name: service.name,
+              description: service.description,
+              image_url: service.image_url,
+            }),
           });
           if (!response.ok) {
             return false;

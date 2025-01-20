@@ -105,14 +105,16 @@ def get_category(category_id):
 def add_category():
     try:
         data = request.json
-        print("Received data:", data)
         if 'name' not in data:
             return jsonify({"error": "Name is required"}), 400
 
-        new_category = Category(name=data['name'])
+        new_category = Category(
+            name=data['name'],
+            image_url=data.get('image_url')
+        )
         db.session.add(new_category)
         db.session.commit()
-        return jsonify({"message": "Category added successfully!"}), 201
+        return jsonify({"message": "Category added successfully!", "category": new_category.serialize()}), 201
     except Exception as e:
         print(f"Error adding category: {e}")
         return jsonify({"error": "Failed to add category"}), 500
@@ -128,12 +130,15 @@ def update_category(category_id):
 
         if 'name' in data:
             category.name = data['name']
+        if 'image_url' in data:
+            category.image_url = data['image_url']
 
         db.session.commit()
-        return jsonify({"message": "Category updated successfully!"}), 200
+        return jsonify({"message": "Category updated successfully!", "category": category.serialize()}), 200
     except Exception as e:
         print(f"Error updating category: {e}")
         return jsonify({"error": "Failed to update category"}), 500
+
 
 @api_blueprint.route('/categories/<int:category_id>', methods=['DELETE'])
 @jwt_required()
@@ -172,10 +177,14 @@ def add_subcategory():
         if 'name' not in data or 'category_id' not in data:
             return jsonify({"error": "Name and category_id are required"}), 400
 
-        new_subcategory = Subcategory(name=data['name'], category_id=data['category_id'])
+        new_subcategory = Subcategory(
+            name=data['name'],
+            category_id=data['category_id'],
+            image_url=data.get('image_url')
+        )
         db.session.add(new_subcategory)
         db.session.commit()
-        return jsonify({"message": "Subcategory added successfully!"}), 201
+        return jsonify({"message": "Subcategory added successfully!", "subcategory": new_subcategory.serialize()}), 201
     except Exception as e:
         print(f"Error adding subcategory: {e}")
         return jsonify({"error": "Failed to add subcategory"}), 500
@@ -193,9 +202,11 @@ def update_subcategory(subcategory_id):
             subcategory.name = data['name']
         if 'category_id' in data:
             subcategory.category_id = data['category_id']
+        if 'image_url' in data:
+            subcategory.image_url = data['image_url']
 
         db.session.commit()
-        return jsonify({"message": "Subcategory updated successfully!"}), 200
+        return jsonify({"message": "Subcategory updated successfully!", "subcategory": subcategory.serialize()}), 200
     except Exception as e:
         print(f"Error updating subcategory: {e}")
         return jsonify({"error": "Failed to update subcategory"}), 500
@@ -379,17 +390,17 @@ def get_service(service_id):
 def add_service():
     try:
         data = request.json
-        if 'name' not in data or 'price' not in data:
-            return jsonify({"error": "Name and price are required"}), 400
+        if 'name' not in data:
+            return jsonify({"error": "Name is required"}), 400
 
         new_service = Service(
             name=data['name'],
             description=data.get('description'),
-            price=data['price']
+            image_url=data.get('image_url')
         )
         db.session.add(new_service)
         db.session.commit()
-        return jsonify({"message": "Service added successfully!"}), 201
+        return jsonify({"message": "Service added successfully!", "service": new_service.serialize()}), 201
     except Exception as e:
         print(f"Error adding service: {e}")
         return jsonify({"error": "Failed to add service"}), 500
@@ -407,11 +418,11 @@ def update_service(service_id):
             service.name = data['name']
         if 'description' in data:
             service.description = data['description']
-        if 'price' in data:
-            service.price = data['price']
+        if 'image_url' in data:
+            service.image_url = data['image_url']
 
         db.session.commit()
-        return jsonify({"message": "Service updated successfully!"}), 200
+        return jsonify({"message": "Service updated successfully!", "service": service.serialize()}), 200
     except Exception as e:
         print(f"Error updating service: {e}")
         return jsonify({"error": "Failed to update service"}), 500
