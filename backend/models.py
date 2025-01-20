@@ -26,18 +26,21 @@ class Category(db.Model):
     __tablename__ = 'categories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
     subcategories = db.relationship('Subcategory', backref='category', lazy=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
+            "image_url": self.image_url,
         }
 
 class Subcategory(db.Model):
     __tablename__ = 'subcategories'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     products = db.relationship('Product', backref='subcategory', lazy=True)
 
@@ -45,6 +48,7 @@ class Subcategory(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "image_url": self.image_url,
             "category_id": self.category_id
         }
 
@@ -87,14 +91,15 @@ class Service(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    price = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(255), nullable=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "price": self.price,
+            "image_url": self.image_url
+            
         }
 
 class Inquiry(db.Model):

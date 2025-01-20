@@ -19,31 +19,33 @@ import {
   PopoverTrigger,
   PopoverContent,
   Image,
+  Textarea,
 } from "@nextui-org/react"
 import { Plus, Edit, Trash2, Upload, Eye } from "lucide-react"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
-export default function CategoryManager({ categories }) {
+export default function ServiceManager({ services }) {
   const { actions } = useContext(Context)
   const [isOpen, setIsOpen] = useState(false)
-  const [editingCategory, setEditingCategory] = useState(null)
+  const [editingService, setEditingService] = useState(null)
   const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
   const [imageFile, setImageFile] = useState(null)
   const [imageUrl, setImageUrl] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
-  const sortedCategories = useMemo(() => {
-    return [...categories].sort((a, b) => a.name.localeCompare(b.name))
-  }, [categories])
+  const sortedServices = useMemo(() => {
+    return [...services].sort((a, b) => a.name.localeCompare(b.name))
+  }, [services])
 
-  const totalPages = Math.ceil(sortedCategories.length / itemsPerPage)
+  const totalPages = Math.ceil(sortedServices.length / itemsPerPage)
 
-  const currentCategories = useMemo(() => {
+  const currentServices = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
-    return sortedCategories.slice(start, start + itemsPerPage)
-  }, [sortedCategories, currentPage])
+    return sortedServices.slice(start, start + itemsPerPage)
+  }, [sortedServices, currentPage])
 
   const handleImageChange = async (e) => {
     if (e.target.files[0]) {
@@ -63,48 +65,51 @@ export default function CategoryManager({ categories }) {
 
   const uploadImage = async (file) => {
     const storage = getStorage()
-    const imageRef = ref(storage, `categories/${Date.now()}_${file.name}`)
+    const imageRef = ref(storage, `services/${Date.now()}_${file.name}`)
     await uploadBytes(imageRef, file)
     return getDownloadURL(imageRef)
   }
 
   const handleSubmit = async () => {
-    if (editingCategory) {
-      await actions.updateCategory(editingCategory.id, { name, image_url: imageUrl })
+    if (editingService) {
+      await actions.updateService(editingService.id, { name, description, image_url: imageUrl })
     } else {
-      await actions.createCategory({ name, image_url: imageUrl })
+      await actions.createService({ name, description, image_url: imageUrl })
     }
     setIsOpen(false)
-    setEditingCategory(null)
+    setEditingService(null)
     setName("")
+    setDescription("")
     setImageFile(null)
     setImageUrl(null)
-    actions.getCategories()
+    actions.getServices()
   }
 
   const handleDelete = async (id) => {
-    await actions.deleteCategory(id)
-    actions.getCategories()
+    await actions.deleteService(id)
+    actions.getServices()
   }
 
   return (
     <div className="p-4">
       <Button onClick={() => setIsOpen(true)} variant="ghost" className="mb-4 text-orange-500 text-sm px-3 py-1">
         <Plus size={16} />
-        <span className="ml-1">Añadir Categoría</span>
+        <span className="ml-1">Añadir Servicio</span>
       </Button>
-      <Table aria-label="Tabla de categorías" className="min-w-full">
+      <Table aria-label="Tabla de servicios" className="min-w-full">
         <TableHeader>
           <TableColumn>NOMBRE</TableColumn>
+          <TableColumn>DESCRIPCIÓN</TableColumn>
           <TableColumn>IMAGEN</TableColumn>
           <TableColumn>ACCIONES</TableColumn>
         </TableHeader>
         <TableBody>
-          {currentCategories.map((category) => (
-            <TableRow key={category.id}>
-              <TableCell>{category.name}</TableCell>
+          {currentServices.map((service) => (
+            <TableRow key={service.id}>
+              <TableCell>{service.name}</TableCell>
+              <TableCell>{service.description}</TableCell>
               <TableCell>
-                {category.image_url && (
+                {service.image_url && (
                   <Popover>
                     <PopoverTrigger>
                       <Button isIconOnly variant="light">
@@ -113,8 +118,8 @@ export default function CategoryManager({ categories }) {
                     </PopoverTrigger>
                     <PopoverContent>
                       <Image
-                        src={category.image_url || "/placeholder.svg"}
-                        alt={category.name}
+                        src={service.image_url || "/placeholder.svg"}
+                        alt={service.name}
                         width={160}
                         height={160}
                         className="object-cover rounded"
@@ -128,9 +133,10 @@ export default function CategoryManager({ categories }) {
                   <Button
                     isIconOnly
                     onClick={() => {
-                      setEditingCategory(category)
-                      setName(category.name)
-                      setImageUrl(category.image_url)
+                      setEditingService(service)
+                      setName(service.name)
+                      setDescription(service.description)
+                      setImageUrl(service.image_url)
                       setIsOpen(true)
                     }}
                     variant="ghost"
@@ -138,7 +144,7 @@ export default function CategoryManager({ categories }) {
                   >
                     <Edit size={16} />
                   </Button>
-                  <Button isIconOnly onClick={() => handleDelete(category.id)} variant="ghost" className="text-red-500">
+                  <Button isIconOnly onClick={() => handleDelete(service.id)} variant="ghost" className="text-red-500">
                     <Trash2 size={16} />
                   </Button>
                 </div>
@@ -154,16 +160,18 @@ export default function CategoryManager({ categories }) {
         isOpen={isOpen}
         onClose={() => {
           setIsOpen(false)
-          setEditingCategory(null)
+          setEditingService(null)
           setName("")
+          setDescription("")
           setImageFile(null)
           setImageUrl(null)
         }}
       >
         <ModalContent>
-          <ModalHeader>{editingCategory ? "Editar Categoría" : "Añadir Categoría"}</ModalHeader>
+          <ModalHeader>{editingService ? "Editar Servicio" : "Añadir Servicio"}</ModalHeader>
           <ModalBody>
             <Input label="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
+            <Textarea label="Descripción" value={description} onChange={(e) => setDescription(e.target.value)} />
             <div className="mt-4">
               <label htmlFor="image" className="block text-sm font-medium text-gray-700">
                 Imagen
@@ -199,7 +207,7 @@ export default function CategoryManager({ categories }) {
               className="bg-orange-500 text-white text-sm px-3 py-1"
               disabled={isUploading}
             >
-              {editingCategory ? "Actualizar" : "Crear"}
+              {editingService ? "Actualizar" : "Crear"}
             </Button>
           </ModalFooter>
         </ModalContent>

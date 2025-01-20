@@ -154,6 +154,7 @@ export default function Navbar() {
     <NavbarUI className="bg-white shadow-lg py-4 relative z-50" maxWidth="full">
       <NavbarBrand>
         <div className="flex items-center space-x-4 ml-4">
+          <Link href="/" >
           <Image
             src="/img/logo.png"
             alt="Industrial Parts Co. Logo"
@@ -161,7 +162,10 @@ export default function Navbar() {
             height={80}
             className="mr-4 object-contain"
           />
+          </Link>
+          <Link href="/">
           <p className="font-bold text-blue-800 text-3xl">REPSOIN SA.</p>
+           </Link>
         </div>
       </NavbarBrand>
       <NavbarContent className="hidden lg:flex items-center gap-6" justify="center">
