@@ -1,40 +1,65 @@
-import React from 'react';
+import React, { useMemo } from "react"
+import { Card, CardBody, CardFooter, Image, Button } from "@nextui-org/react"
+import { useNavigate } from "react-router-dom"
 
-const FeaturedProducts = ({ products }) => {
-  if (!products || products.length === 0) {
-    return (
-      <section className="mb-16">
-        <h2 className="text-3xl font-bold mb-8 text-blue-800">Featured Products</h2>
-        <p className="text-gray-600">We're currently updating our product catalog. Check back soon for our featured industrial components.</p>
-      </section>
-    );
-  }
+export default function FeaturedProducts({ products }) {
+  const navigate = useNavigate()
+
+  const lastTenProducts = useMemo(() => {
+    return [...products].sort((a, b) => b.id - a.id).slice(0, 10)
+  }, [products])
 
   return (
-    <section className="mb-16">
-      <h2 className="text-3xl font-bold mb-8 text-blue-800">Productos Destacados</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {products.map((product) => (
-          <div key={product.id} className="bg-white p-6 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-            <img
-              src={product.images && product.images[0]?.url || '/placeholder.jpg'}
-              alt={product.name}
-              className="w-full h-48 object-cover mb-6 rounded"
-            />
-            <h3 className="text-xl font-semibold mb-2 text-blue-600">{product.name}</h3>
-            <p className="text-gray-600 mb-4">{product.description ? `${product.description.slice(0, 100)}...` : 'No description available.'}</p>
-            <div className="flex justify-between items-center">
-              <p className="text-2xl font-bold text-blue-800">${product.price ? product.price.toFixed(2) : '0.00'}</p>
-              <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
-                Ver Detalles
-              </button>
-            </div>
-          </div>
-        ))}
+    <div className="mb-16">
+      <h2 className="text-3xl font-semibold mb-8 text-blue-800">Recién LLegados</h2>
+      <div className="overflow-x-auto pb-4" style={{ scrollbarWidth: "thin" }}>
+        <div className="flex space-x-6" style={{ minWidth: "max-content" }}>
+          {lastTenProducts.map((product) => (
+            <Card
+              key={product.id}
+              isPressable
+              onPress={() => navigate(`/product/${product.id}`)}
+              className="shadow-md hover:shadow-lg transition-shadow duration-300 w-64 flex-shrink-0"
+            >
+              <CardBody className="p-0">
+                <div className="w-full aspect-square relative">
+                  <Image
+                    src={(product.images && product.images[0]?.url) || "/placeholder.jpg"}
+                    alt={product.name}
+                    classNames={{
+                      wrapper: "absolute inset-0",
+                      img: "object-cover w-full h-full",
+                    }}
+                  />
+                </div>
+              </CardBody>
+              <CardBody className="p-4">
+                <h3 className="text-xl font-semibold mb-2 text-center">{product.name}</h3>
+                <p className="text-sm text-gray-600 mb-4 line-clamp-2 text-center">
+                  {product.description || "No description available."}
+                </p>
+                <p className="text-lg font-bold text-gray-800 text-center">
+                  ${product.price ? product.price.toFixed(2) : "0.00"}
+                </p>
+              </CardBody>
+              <CardFooter className="p-0">
+                <Button
+                  className="w-full rounded-none h-12"
+                  color="primary"
+                  variant="flat"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    navigate(`/product/${product.id}`)
+                  }}
+                >
+                  Ver detalles
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
-    </section>
-  );
-};
-
-export default FeaturedProducts;
+    </div>
+  )
+}
 
