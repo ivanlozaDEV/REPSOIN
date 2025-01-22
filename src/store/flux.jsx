@@ -178,6 +178,20 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("Error fetching products by category:", error)
         }
       },
+      getProductsBySubcategory: async (subcategoryId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/products/subcategory/${subcategoryId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch products by subcategory")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching products by subcategory:", error)
+          return []
+        }
+      },
+
       updateCategory: async (categoryId, category) => {
         try {
           const token = localStorage.getItem("token");

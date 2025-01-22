@@ -4,6 +4,8 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "../src/store/appContext.jsx";
 import CategoryPage from "./pages/categoryPage.jsx";
+import SubcategoryPage from "./pages/subcategoryPage.jsx";
+import ServicesPage from "./pages/servicesPage.jsx";
 
 
 import Home from "./pages/home.jsx";
@@ -24,6 +26,8 @@ function App({ Component, pageProps }) {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/category/:id" element={<CategoryPage />} />
             <Route path="/product/:id" element={<ProductView />} />
+            <Route path="/subcategory/:id" element={<SubcategoryPage />} />
+            <Route path="/services" element={<ServicesPage />} />
           </Routes>
           <Footer />
         </BrowserRouter>

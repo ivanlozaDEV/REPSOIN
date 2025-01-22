@@ -3,6 +3,7 @@ import { Context } from "../store/appContext"
 import CategorySection from "../components/categorySection"
 import FeaturedProducts from "../components/featuredProducts";
 import HeroSection from "../components/heroSection";
+import ServicesSection from '../components/servicesSection';
 import "../styles/background.css"
 
 const Home = () => {
@@ -13,7 +14,8 @@ const Home = () => {
     const fetchData = async () => {
       await Promise.all([
         actions.getCategories(),
-        actions.getProducts()
+        actions.getProducts(),
+        actions.getServices()
       ]);
       setIsLoading(false);
     };
@@ -34,6 +36,7 @@ const Home = () => {
       <div className="container mx-auto px-4 py-12">
         <CategorySection categories={store.categories} />
         <FeaturedProducts products={store.products} />
+        <ServicesSection services = {store.services} />
       </div>
     </div>
   );
