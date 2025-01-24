@@ -5,14 +5,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import injectContext from "../src/store/appContext.jsx";
 import CategoryPage from "./pages/categoryPage.jsx";
 import SubcategoryPage from "./pages/subcategoryPage.jsx";
+import ServiceView from "./pages/servicesView.jsx";
 import ServicesPage from "./pages/servicesPage.jsx";
-
-
 import Home from "./pages/home.jsx";
 import Navbar from "./components/navbar.jsx";
 import Footer from "./components/footer.jsx";
 import Dashboard from "./pages/dashboard.jsx";
 import ProductView from "./pages/productView.jsx";
+
 
 function App({ Component, pageProps }) {
   return (
@@ -28,6 +28,7 @@ function App({ Component, pageProps }) {
             <Route path="/product/:id" element={<ProductView />} />
             <Route path="/subcategory/:id" element={<SubcategoryPage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/service/:id" element={<ServiceView />} />
           </Routes>
           <Footer />
         </BrowserRouter>

@@ -519,6 +519,20 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+
+      getService: async (id) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services/${id}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch service")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching service:", error)
+          throw error
+        }
+      },
       updateService: async (serviceId, service) => {
         try {
           const token = localStorage.getItem("token");

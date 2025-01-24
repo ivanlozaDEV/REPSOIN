@@ -2,3 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply light text-foreground bg-background;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply text-foreground bg-background;
+}
+
+/* Override NextUI default styles */
+.nextui-c-PJLV {
+  --nextui--navbarBlur: 0 !important;
+  --nextui--navbarBackgroundColor: hsl(var(--nextui-colors-background)) !important;
+}
+
+.nextui-navbar-container {
+  background-color: hsl(var(--nextui-colors-background)) !important;
+}
+

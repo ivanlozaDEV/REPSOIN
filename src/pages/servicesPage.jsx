@@ -5,23 +5,24 @@ import { Card, CardBody, CardFooter, Image, Button, Breadcrumbs, BreadcrumbItem 
 
 export default function ServicesPage() {
   const { store, actions } = useContext(Context)
-  const [services, setServices] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const servicesData = await actions.getServices()
-        setServices(servicesData)
+        await actions.getServices()
+        setIsLoading(false)
       } catch (error) {
         console.error("Error fetching services:", error)
+        setIsLoading(false)
       }
     }
 
     fetchServices()
   }, [actions])
 
-  if (services.length === 0) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
@@ -51,8 +52,8 @@ export default function ServicesPage() {
 
       <div className="mb-16">
         <h2 className="text-3xl font-semibold mb-8 text-blue-800">Servicios Disponibles</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {store.services.map((service) => (
             <Card
               shadow="sm"
               key={service.id}
@@ -61,25 +62,22 @@ export default function ServicesPage() {
               className="shadow-md hover:shadow-lg transition-shadow duration-300"
             >
               <CardBody className="p-0">
-                <div className="w-full aspect-square relative">
+              <div className="w-full aspect-square relative flex justify-center items-center">
                   <Image
                     shadow="sm"
                     radius="lg"
                     alt={service.name}
-                    className="object-cover"
                     src={service.image_url || "/placeholder.svg"}
                     classNames={{
-                      wrapper: "absolute inset-0",
-                      img: "object-cover w-full h-full",
+                      wrapper: "absolute inset-0 flex items-center justify-center",
+                      img: "object-contain",
                     }}
                   />
                 </div>
               </CardBody>
-              <CardFooter className="flex flex-col items-center p-4">
+              <CardFooter className="flex flex-col items-center p-3">
                 <b className="text-lg mb-2">{service.name}</b>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2 text-center">
-                  {service.description || "No description available."}
-                </p>
+                
                 <Button
                   className="w-full"
                   color="primary"

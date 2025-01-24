@@ -16,7 +16,7 @@ export default function CategoryPage() {
       try {
         const categoryData = await actions.getCategory(id)
         setCategory(categoryData)
-        console.log("Category data:", categoryData)
+       
 
         const subcategoriesData = await actions.getSubcategoriesByCategory(id)
         setSubcategories(subcategoriesData)

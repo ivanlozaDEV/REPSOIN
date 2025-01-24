@@ -19,25 +19,21 @@ export default function ServicesSection({ services }) {
               className="shadow-md hover:shadow-lg transition-shadow duration-300 w-64 flex-shrink-0"
             >
               <CardBody className="p-0">
-                <div className="w-full aspect-square relative">
+                <div className="w-full aspect-square relative flex justify-center items-center">
                   <Image
                     shadow="sm"
                     radius="lg"
                     alt={service.name}
-                    className="object-cover"
                     src={service.image_url || "/placeholder.svg"}
                     classNames={{
-                      wrapper: "absolute inset-0",
-                      img: "object-cover w-full h-full",
+                      wrapper: "absolute inset-0 flex items-center justify-center",
+                      img: "object-contain",
                     }}
                   />
                 </div>
               </CardBody>
               <CardFooter className="flex flex-col items-center p-4">
                 <b className="text-lg mb-2">{service.name}</b>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2 text-center">
-                  {service.description || "No description available."}
-                </p>
                 <Button
                   className="w-full"
                   color="primary"
