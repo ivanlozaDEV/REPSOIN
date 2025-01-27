@@ -12,6 +12,7 @@ import Navbar from "./components/navbar.jsx";
 import Footer from "./components/footer.jsx";
 import Dashboard from "./pages/dashboard.jsx";
 import ProductView from "./pages/productView.jsx";
+import AboutPage from "./pages/aboutPage.jsx";
 
 
 function App({ Component, pageProps }) {
@@ -29,6 +30,7 @@ function App({ Component, pageProps }) {
             <Route path="/subcategory/:id" element={<SubcategoryPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceView />} />
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
           <Footer />
         </BrowserRouter>
