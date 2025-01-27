@@ -4,6 +4,7 @@ import { Context } from "../store/appContext"
 import { Card, CardBody, Image, Button, Breadcrumbs, BreadcrumbItem } from "@nextui-org/react"
 import { Carousel } from "react-responsive-carousel"
 import "react-responsive-carousel/lib/styles/carousel.min.css"
+import InquiryModal from "../components/inquiryModal"
 
 export default function ProductView() {
   const { id } = useParams()
@@ -78,9 +79,7 @@ export default function ProductView() {
           <p className="text-2xl font-bold text-blue-800 mb-4">${product.price ? product.price.toFixed(2) : "0.00"}</p>
           <p className="text-lg mb-4">{product.description}</p>
           <p className="text-md mb-6">Stock: {product.stock || "N/A"}</p>
-          <Button color="primary" size="lg" onClick={handleInquiry}>
-            Start Inquiry
-          </Button>
+          <InquiryModal productId={product.id} productName={product.name} />
         </div>
       </div>
     </div>

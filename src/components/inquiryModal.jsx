@@ -21,7 +21,7 @@ export default function InquiryModal({ productId, productName }) {
   return (
     <>
       <Button onPress={onOpen} color="primary">
-        Hacer Consulta
+        Solicitar Cotización
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
