@@ -240,6 +240,17 @@ def get_product(product_id):
         return jsonify({"error": "Product not found"}), 404
     return jsonify(product.serialize())
 
+@api_blueprint.route('/products/subcategory/<int:subcategory_id>', methods=['GET'])
+def get_products_by_subcategory(subcategory_id):
+    try:
+        products = Product.query.filter_by(subcategory_id=subcategory_id).all()
+        return jsonify([product.serialize() for product in products])
+    except Exception as e:
+        print(f"Error fetching products by subcategory: {e}")
+        return jsonify({"error": "Failed to fetch products"}), 500
+
+
+
 @api_blueprint.route('/products', methods=['POST'])
 @jwt_required()
 def add_product():

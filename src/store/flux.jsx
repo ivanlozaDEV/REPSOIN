@@ -140,6 +140,58 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+      getCategory: async (id) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/categories/${id}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch category")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching category:", error)
+        }
+      },
+
+      getSubcategoriesByCategory: async (categoryId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories?category_id=${categoryId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch subcategories by category")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching subcategories by category:", error)
+        }
+      },
+    
+      getProductsByCategory: async (categoryId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/products?category_id=${categoryId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch products by category")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching products by category:", error)
+        }
+      },
+      getProductsBySubcategory: async (subcategoryId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/products/subcategory/${subcategoryId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch products by subcategory")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching products by subcategory:", error)
+          return []
+        }
+      },
+
       updateCategory: async (categoryId, category) => {
         try {
           const token = localStorage.getItem("token");
@@ -218,6 +270,20 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+
+      getSubcategory: async (id) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/subcategories/${id}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch subcategory")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching subcategory:", error)
+        }
+      },
+
       updateSubcategory: async (subcategoryId, subcategory) =>
         {
           try {
@@ -295,6 +361,18 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ products: data });
         } catch (error) {
           console.log(error);
+        }
+      },
+      getProduct: async (id) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/products/${id}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch product")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching product:", error)
         }
       },
       updateProduct: async (productId, product) => {
@@ -439,6 +517,20 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ services: data });
         } catch (error) {
           console.log(error);
+        }
+      },
+
+      getService: async (id) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/services/${id}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch service")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching service:", error)
+          throw error
         }
       },
       updateService: async (serviceId, service) => {
