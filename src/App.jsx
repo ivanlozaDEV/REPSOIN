@@ -13,6 +13,7 @@ import Footer from "./components/footer.jsx";
 import Dashboard from "./pages/dashboard.jsx";
 import ProductView from "./pages/productView.jsx";
 import AboutPage from "./pages/aboutPage.jsx";
+import ContactPage from "./pages/contactPage.jsx";
 
 
 function App({ Component, pageProps }) {
@@ -31,6 +32,7 @@ function App({ Component, pageProps }) {
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/service/:id" element={<ServiceView />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
           <Footer />
         </BrowserRouter>
