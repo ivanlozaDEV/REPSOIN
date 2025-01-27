@@ -16,7 +16,7 @@ export default function SubcategoryPage() {
       try {
         const subcategoryData = await actions.getSubcategory(id)
         setSubcategory(subcategoryData)
-        console.log("Subcategory data:", subcategoryData)
+    
 
         if (subcategoryData && subcategoryData.category_id) {
           const categoryData = await actions.getCategory(subcategoryData.category_id)
@@ -26,7 +26,7 @@ export default function SubcategoryPage() {
         const products = await actions.getProductsBySubcategory(id)
         setRelatedProducts(products)
       } catch (error) {
-        console.error("Error fetching subcategory data:", error)
+     
       }
     }
 
