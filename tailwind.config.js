@@ -6,6 +6,7 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      
       button: {
         base: "py-2 px-4 text-lg", // Example: padding and font size
       },

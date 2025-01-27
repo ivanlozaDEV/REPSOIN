@@ -4,6 +4,7 @@ import CategorySection from "../components/categorySection"
 import FeaturedProducts from "../components/featuredProducts";
 import HeroSection from "../components/heroSection";
 import ServicesSection from '../components/servicesSection';
+import BrandsCarousel from '../components/brandsCarrousel';
 import "../styles/background.css"
 
 const Home = () => {
@@ -37,6 +38,8 @@ const Home = () => {
         <CategorySection categories={store.categories} />
         <FeaturedProducts products={store.products} />
         <ServicesSection services = {store.services} />
+        <BrandsCarousel />
+
       </div>
     </div>
   );
