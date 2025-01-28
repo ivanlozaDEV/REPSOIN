@@ -14,8 +14,8 @@ const brandLogos = [
   { name: "Brand 8", src: "/img/siemens.jpg" },
   { name: "Brand 9", src: "/img/United.jpg" },
   { name: "Brand 10", src: "/img/Warrick.jpg" },
-  { name: "Brand 11", src: "/img/Webster.jpg" },
-  { name: "Brand 12", src: "/img/Warrick.jpg" },]
+  { name: "Brand 11", src: "/img/Webster.jpg" }
+]
 
 export default function BrandsCarousel() {
     const settings = {
@@ -25,7 +25,7 @@ export default function BrandsCarousel() {
         slidesToShow: 5,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 2000,
+        autoplaySpeed: 200,
         responsive: [
 
           {
