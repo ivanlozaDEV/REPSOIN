@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from "react"
+import { useState, useEffect, useContext, useRef } from "react"
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu"
 import { Navbar as NavbarUI, NavbarBrand, NavbarContent, NavbarItem, Image, Input } from "@nextui-org/react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { LoginModal } from "./LoginModal"
 import { Context } from "../store/appContext"
-import { SearchIcon, ChevronRight, UserCircle, Menu } from "lucide-react"
+import { SearchIcon, ChevronRight, UserCircle, Menu, LogOut } from "lucide-react"
 import styles from "../components/Navbar.module.css"
 
 export default function Navbar() {
@@ -14,7 +14,9 @@ export default function Navbar() {
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const searchInputRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +28,21 @@ export default function Navbar() {
       ])
     }
     fetchData()
-  }, []) // Remove actions from the dependency array
+  }, [actions.getCategories, actions.getSubcategories, actions.getProducts, actions.getServices])
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("token")
+      setIsLoggedIn(!!token)
+    }
+
+    checkLoginStatus()
+    window.addEventListener("storage", checkLoginStatus)
+
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus)
+    }
+  }, [])
 
   useEffect(() => {
     if (store.categories.length && store.subcategories.length && store.products.length) {
@@ -73,6 +89,25 @@ export default function Navbar() {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    setIsLoggedIn(false)
+    navigate("/") // Navigate to home page after logout
+  }
+
+  const handleLoginLogout = () => {
+    if (isLoggedIn) {
+      handleLogout()
+    } else {
+      setIsLoginOpen(true)
+    }
+  }
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true)
+    setIsLoginOpen(false)
   }
 
   const NavLinks = () => (
@@ -190,6 +225,13 @@ export default function Navbar() {
           Contacto
         </Link>
       </NavbarItem>
+      {isLoggedIn && (
+        <NavbarItem>
+          <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
+            Dashboard
+          </Link>
+        </NavbarItem>
+      )}
     </>
   )
 
@@ -255,10 +297,11 @@ export default function Navbar() {
         </NavbarItem>
         <NavbarItem>
           <button
-            onClick={() => setIsLoginOpen(true)}
-            className="text-gray-600 hover:text-blue-600 p-2 rounded-full transition duration-300"
+            onClick={handleLoginLogout}
+            className="text-gray-600 hover:text-blue-600 p-2 rounded-full transition duration-300 flex items-center justify-center"
+            aria-label={isLoggedIn ? "Logout" : "Login"}
           >
-            <UserCircle size={24} />
+            {isLoggedIn ? <LogOut size={24} /> : <UserCircle size={24} />}
           </button>
         </NavbarItem>
         <NavbarItem className="lg:hidden">
@@ -270,7 +313,7 @@ export default function Navbar() {
           </button>
         </NavbarItem>
       </NavbarContent>
-      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onLoginSuccess={handleLoginSuccess} />
       {isMobileMenuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 bg-white shadow-lg py-4 px-6 z-50">
           <NavLinks />
