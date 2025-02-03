@@ -5,8 +5,10 @@ from backend.models import User, Category, Subcategory, Product, Service, Inquir
 from backend.extensions import db
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
+from .email_service import send_inquiry_email
 import base64
 from .oauth import get_credentials
+
 
 
 
@@ -482,33 +484,11 @@ def add_inquiry():
         # Debugging: Log the received data
         print("Received data:", data)
         
-        # Send email
-        credentials = get_credentials()
-        service = build('gmail', 'v1', credentials=credentials)
-        email_content = f"""
-        New inquiry from {data['name']}:
+        # Send email using email_service.py
+        email_sent = send_inquiry_email(data)
         
-        Name: {data['name']}
-        Email: {data['email']}
-        City: {data['city']}
-        Phone: {data['phone']}
-        Message: {data['message']}
-        Product ID: {data['product_id']}
-        """
-        message = MIMEText(email_content)
-        message['to'] = 'ventas@repsoin.com'
-        message['from'] = 'cotizacionesweb@repsoin.com'
-        message['subject'] = 'Nueva Cotiazcion'
-        raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        message = {'raw': raw}
-        
-        # Debugging: Log before sending the email
-        print("Sending email with content:", email_content)
-        
-        service.users().messages().send(userId='me', body=message).execute()
-        
-        # Debugging: Log after sending the email
-        print("Email sent successfully")
+        if not email_sent:
+            return jsonify({"error": "Failed to send email"}), 500
 
         new_inquiry = Inquiry(
             name=data['name'],
