@@ -8,10 +8,10 @@ import "react-toastify/dist/ReactToastify.css"
 // Add this custom CSS
 const toastStyles = `
   .Toastify__toast--success .Toastify__progress-bar {
-    background-color: #2c5282 !important;
+    background-color: #1a43a1 !important;
   }
   .Toastify__toast--success .Toastify__toast-icon svg {
-    fill: #2c5282 !important;
+    fill: #1a43a1 !important;
   }
   .Toastify__toast--error .Toastify__progress-bar {
     background-color: #e53e3e !important;
@@ -32,7 +32,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     if (result.success) {
       toast.success("¡Inicio de sesión exitoso!", {
         position: "top-right",
-        autoClose: 1500,
+        autoClose: 1100,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -46,7 +46,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     } else {
       toast.error("Error de inicio de sesión. Por favor, inténtalo de nuevo.", {
         position: "top-right",
-        autoClose: 1500,
+        autoClose: 1100,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -66,14 +66,14 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         isOpen={isOpen}
         onClose={onClose}
         classNames={{
-          base: "bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-900",
+          base: "bg-gradient-to-br from-blue-300 to-orange-300 dark:from-gray-800 dark:to-gray-900",
           header: "border-b border-gray-200 dark:border-gray-700",
           footer: "border-t border-gray-200 dark:border-gray-700",
         }}
       >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Iniciar Sesión</h2>
+            <h2 className="text-2xl font-bold text-blue-800 dark:text-blue-400">Iniciar Sesión</h2>
           </ModalHeader>
           <ModalBody>
             <Input
@@ -92,10 +92,10 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
+            <Button className="bg-orange-500 text-white"   onPress={onClose}>
               Cerrar
             </Button>
-            <Button color="primary" onPress={handleLogin}>
+            <Button className="bg-blue-800 text-white" onPress={handleLogin}>
               Iniciar Sesión
             </Button>
           </ModalFooter>
