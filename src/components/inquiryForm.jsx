@@ -24,7 +24,7 @@ export default function InquiryForm({ productId, productName }) {
     e.preventDefault()
     try {
       const inquiryData = productId ? { ...formData, product_id: productId } : { ...formData, product_id: null }
-      await actions.createInquiry(inquiryData)
+      await actions.addInquiry(inquiryData)
       setFormData({
         name: "",
         email: "",

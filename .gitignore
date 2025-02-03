@@ -14,6 +14,8 @@ dist-ssr
 
 #variables de entorno
 .env
+credentials.json
+token.json
 
 # Editor directories and files
 .vscode/*
