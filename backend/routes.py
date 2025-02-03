@@ -3,6 +3,12 @@ from flask_jwt_extended import jwt_required, create_access_token
 from werkzeug.security import check_password_hash
 from backend.models import User, Category, Subcategory, Product, Service, Inquiry, ProductImage
 from backend.extensions import db
+from googleapiclient.discovery import build
+from email.mime.text import MIMEText
+import base64
+from .oauth import get_credentials
+
+
 
 api_blueprint = Blueprint('api', __name__)
 
@@ -472,6 +478,37 @@ def add_inquiry():
         data = request.json
         if 'name' not in data or 'email' not in data or 'city' not in data or 'phone' not in data or 'message' not in data or 'product_id' not in data:
             return jsonify({"error": "Name, email, city, phone, message, and product_id are required"}), 400
+        
+        # Debugging: Log the received data
+        print("Received data:", data)
+        
+        # Send email
+        credentials = get_credentials()
+        service = build('gmail', 'v1', credentials=credentials)
+        email_content = f"""
+        New inquiry from {data['name']}:
+        
+        Name: {data['name']}
+        Email: {data['email']}
+        City: {data['city']}
+        Phone: {data['phone']}
+        Message: {data['message']}
+        Product ID: {data['product_id']}
+        """
+        message = MIMEText(email_content)
+        message['to'] = 'ventas@repsoin.com'
+        message['from'] = 'cotizacionesweb@repsoin.com'
+        message['subject'] = 'Nueva Cotiazcion'
+        raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+        message = {'raw': raw}
+        
+        # Debugging: Log before sending the email
+        print("Sending email with content:", email_content)
+        
+        service.users().messages().send(userId='me', body=message).execute()
+        
+        # Debugging: Log after sending the email
+        print("Email sent successfully")
 
         new_inquiry = Inquiry(
             name=data['name'],
@@ -483,10 +520,18 @@ def add_inquiry():
         )
         db.session.add(new_inquiry)
         db.session.commit()
+        
+        # Debugging: Log after saving to the database
+        print("Inquiry saved to database")
+
         return jsonify({"message": "Inquiry added successfully!"}), 201
     except Exception as e:
+        # Debugging: Log the error
+        print("Error:", str(e))
         return jsonify({"error": str(e)}), 500
+    
 
+    
 @api_blueprint.route('/inquiries/<int:inquiry_id>', methods=['PUT'])
 def update_inquiry(inquiry_id):
     try:
