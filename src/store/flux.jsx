@@ -584,6 +584,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             return false;
           }
           const data = await response.json();
+          setStore({ inquiries: data })
           return data;
         } catch (error) {
           console.log(error);
