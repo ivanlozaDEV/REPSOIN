@@ -5,6 +5,7 @@ import CategoryManager from "../components/categoryManager"
 import SubcategoryManager from "../components/subcategoryManager"
 import ProductManager from "../components/productManager"
 import ServiceManager from "../components/serviceManager"
+import InquiryManager from "../components/inquiryManager"
 import "../styles/background.css"
 
 export default function Dashboard() {
@@ -18,11 +19,14 @@ export default function Dashboard() {
         actions.getSubcategories(),
         actions.getProducts(),
         actions.getServices(),
+        actions.getInquiries(),
       ])
       setIsLoading(false)
     }
     fetchData()
   }, [])
+
+  console.log(store.inquiries)
 
   if (isLoading) {
     return (
@@ -64,6 +68,14 @@ export default function Dashboard() {
             </CardBody>
           </Card>
         </Tab>
+        <Tab key="inquiries" title="Clientes y Solicitudes">
+          <Card>
+            <CardBody>
+              <InquiryManager inquiries={store.inquiries} products={store.products} />
+            </CardBody>
+          </Card>
+        </Tab>
+        
       </Tabs>
     </div>
   )
