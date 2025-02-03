@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import { useState, useContext } from "react"
 import { Button } from "@nextui-org/react"
 import { Context } from "../store/appContext"
 
@@ -20,10 +20,17 @@ export default function InquiryForm({ productId, productName }) {
     }))
   }
 
+  const transformPhoneNumber = (phone) => {
+    return '+593' + (phone.startsWith('0') ? phone.slice(1) : phone);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const inquiryData = productId ? { ...formData, product_id: productId } : { ...formData, product_id: null }
+      const transformedPhone = transformPhoneNumber(formData.phone)
+      const inquiryData = productId
+        ? { ...formData, phone: transformedPhone, product_id: productId }
+        : { ...formData, phone: transformedPhone, product_id: null }
       await actions.addInquiry(inquiryData)
       setFormData({
         name: "",
@@ -94,8 +101,10 @@ export default function InquiryForm({ productId, productName }) {
           value={formData.phone}
           onChange={handleChange}
           required
+          placeholder="0991234567"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
         />
+        
       </div>
       <div>
         <label htmlFor="message" className="block text-sm font-medium text-gray-700">
@@ -132,4 +141,3 @@ export default function InquiryForm({ productId, productName }) {
     </form>
   )
 }
-
