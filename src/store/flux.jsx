@@ -8,6 +8,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       products: [],
       services: [],
       productImages: [],
+      productFiles: [],
       inquiries: [],
     },
     actions: {
@@ -348,6 +349,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             return false;
           }
           const data = await response.json();
+          console.log("Create product response:", data); 
           return data;
         } catch (error) {
           console.log(error);
@@ -658,6 +660,124 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.log(error);
         }
       },
+
+      getProductFiles: async () => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch product files")
+          }
+          const data = await response.json()
+          setStore({ productFiles: data })
+        } catch (error) {
+          console.error("Error fetching product files:", error)
+        }
+      },
+
+      getProductFile: async (fileId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files/${fileId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch product file")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching product file:", error)
+        }
+      },
+
+      createProductFile: async (fileData) => {
+        try {
+          const token = localStorage.getItem("token")
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(fileData),
+          })
+          if (!response.ok) {
+            throw new Error("Failed to create product file")
+          }
+          const data = await response.json()
+
+          // Update the store with the new file
+          setStore((store) => ({
+            productFiles: [...store.productFiles, data.file],
+          }))
+
+          // Update the product in the store with the new file
+          setStore((store) => ({
+            products: store.products.map((product) =>
+              product.id === data.file.product_id
+                ? { ...product, files: [...(product.files || []), data.file] }
+                : product,
+            ),
+          }))
+
+          return data
+        } catch (error) {
+          console.error("Error creating product file:", error)
+        }
+      },
+
+      updateProductFile: async (fileId, fileData) => {
+        try {
+          const token = localStorage.getItem("token")
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files/${fileId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(fileData),
+          })
+          if (!response.ok) {
+            throw new Error("Failed to update product file")
+          }
+          const data = await response.json()
+          getActions().getProductFiles() // Refresh the list of product files
+          return data
+        } catch (error) {
+          console.error("Error updating product file:", error)
+        }
+      },
+
+      deleteProductFile: async (fileId) => {
+        try {
+          const token = localStorage.getItem("token")
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files/${fileId}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          if (!response.ok) {
+            throw new Error("Failed to delete product file")
+          }
+          getActions().getProductFiles() // Refresh the list of product files
+          return true
+        } catch (error) {
+          console.error("Error deleting product file:", error)
+          return false
+        }
+      },
+
+      getFilesByProduct: async (productId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/product_files/product/${productId}`)
+          if (!response.ok) {
+            throw new Error("Failed to fetch files for product")
+          }
+          const data = await response.json()
+          return data
+        } catch (error) {
+          console.error("Error fetching files for product:", error)
+        }
+      },
+
     },
   };
 };

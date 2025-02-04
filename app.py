@@ -6,7 +6,7 @@ from backend.routes import api_blueprint
 from backend.config import Config
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from backend.models import User, Category, Subcategory, Product, ProductImage, Service, Inquiry  # Asegúrate de tener el modelo definido en models.py
+from backend.models import User, Category, Subcategory, Product, ProductImage, ProductFile,  Service, Inquiry  # Asegúrate de tener el modelo definido en models.py
 from dotenv import load_dotenv
 from sqlalchemy import text
 from flask_jwt_extended import JWTManager
@@ -59,6 +59,7 @@ def create_app():
     admin.add_view(ModelView(Subcategory, db.session)) 
     admin.add_view(ModelView(Product, db.session))  
     admin.add_view(ModelView(ProductImage, db.session)) 
+    admin.add_view(ModelView(ProductFile, db.session))
     admin.add_view(ModelView(Service, db.session))
     admin.add_view(ModelView(Inquiry, db.session)) 
 

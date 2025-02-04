@@ -1,16 +1,19 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, create_access_token
 from werkzeug.security import check_password_hash
-from backend.models import User, Category, Subcategory, Product, Service, Inquiry, ProductImage
+from backend.models import User, Category, Subcategory, Product, Service, Inquiry, ProductImage, ProductFile
 from backend.extensions import db
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
 from .email_service import send_inquiry_email
+import logging
 import base64
-from .oauth import get_credentials
 
 
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 api_blueprint = Blueprint('api', __name__)
 
@@ -45,17 +48,20 @@ def get_user(user_id):
 def add_user():
     try:
         data = request.json
+        logger.debug(f"Received data: {data}")
+
         if 'username' not in data or 'password' not in data or 'role' not in data:
+            logger.error("Username, password, and role are required")
             return jsonify({"error": "Username, password, and role are required"}), 400
 
         new_user = User(username=data['username'], role=data['role'])
         new_user.set_password(data['password'])
         db.session.add(new_user)
         db.session.commit()
+        logger.info(f"User {new_user.username} added successfully")
         return jsonify({"message": "User added successfully!"}), 201
     except Exception as e:
-        print(f"Error adding user: {e}")
-        return jsonify({"error": "Failed to add user"}), 500
+        logger.error(f"Error adding user: {e}", exc_info=True)
 
 @api_blueprint.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
@@ -264,20 +270,25 @@ def get_products_by_subcategory(subcategory_id):
 def add_product():
     try:
         data = request.json
-        if 'name' not in data or 'price' not in data or 'stock' not in data or 'subcategory_id' not in data:
-            return jsonify({"error": "Name, price, stock, and subcategory_id are required"}), 400
+        required_fields = ['name']
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Name, price, stock, and category_id are required"}), 400
 
         new_product = Product(
             name=data['name'],
+            model=data.get('model'),
             description=data.get('description'),
+            cost=data.get('cost'),
             price=data['price'],
             stock=data['stock'],
-            subcategory_id=data['subcategory_id']
+            category_id=data['category_id'],
+            subcategory_id=data.get('subcategory_id')
         )
         db.session.add(new_product)
         db.session.commit()
-        return jsonify({"message": "Product added successfully!"}), 201
+        return jsonify({"message": "Product added successfully!", "product": new_product.serialize()}), 201
     except Exception as e:
+        db.session.rollback()
         print(f"Error adding product: {e}")
         return jsonify({"error": "Failed to add product"}), 500
 
@@ -292,12 +303,18 @@ def update_product(product_id):
 
         if 'name' in data:
             product.name = data['name']
+        if 'model' in data:
+            product.model = data['model']
         if 'description' in data:
             product.description = data['description']
+        if 'cost' in data:
+            product.cost = data['cost']
         if 'price' in data:
             product.price = data['price']
         if 'stock' in data:
             product.stock = data['stock']
+        if 'category_id' in data:
+            product.category_id = data['category_id']
         if 'subcategory_id' in data:
             product.subcategory_id = data['subcategory_id']
 
@@ -544,3 +561,79 @@ def delete_inquiry(inquiry_id):
         return jsonify({"message": "Inquiry deleted successfully!"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ProductFile Routes
+@api_blueprint.route('/product_files', methods=['GET'])
+def get_product_files():
+    product_files = ProductFile.query.all()
+    return jsonify([file.serialize() for file in product_files])
+
+@api_blueprint.route('/product_files/<int:file_id>', methods=['GET'])
+def get_product_file(file_id):
+    file = ProductFile.query.get(file_id)
+    if not file:
+        return jsonify({"error": "File not found"}), 404
+    return jsonify(file.serialize())
+
+@api_blueprint.route('/product_files', methods=['POST'])
+@jwt_required()
+def add_product_file():
+    try:
+        data = request.json
+        if 'url' not in data or 'product_id' not in data:
+            return jsonify({"error": "URL and product_id are required"}), 400
+
+        new_file = ProductFile(
+            url=data['url'],
+            product_id=data['product_id']
+        )
+        db.session.add(new_file)
+        db.session.commit()
+        return jsonify({"message": "File added successfully!", "file": new_file.serialize()}), 201
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error adding product file: {e}")
+        return jsonify({"error": f"Failed to add file: {str(e)}"}), 500
+
+@api_blueprint.route('/product_files/<int:file_id>', methods=['PUT'])
+@jwt_required()
+def update_product_file(file_id):
+    try:
+        file = ProductFile.query.get(file_id)
+        if not file:
+            return jsonify({"error": "File not found"}), 404
+
+        data = request.json
+        if 'url' in data:
+            file.url = data['url']
+        if 'product_id' in data:
+            file.product_id = data['product_id']
+
+        db.session.commit()
+        return jsonify({"message": "File updated successfully!", "file": file.serialize()}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating product file: {e}")
+        return jsonify({"error": f"Failed to update file: {str(e)}"}), 500
+
+@api_blueprint.route('/product_files/<int:file_id>', methods=['DELETE'])
+@jwt_required()
+def delete_product_file(file_id):
+    try:
+        file = ProductFile.query.get(file_id)
+        if not file:
+            return jsonify({"error": "File not found"}), 404
+
+        db.session.delete(file)
+        db.session.commit()
+        return jsonify({"message": "File deleted successfully!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting product file: {e}")
+        return jsonify({"error": f"Failed to delete file: {str(e)}"}), 500
+
+@api_blueprint.route('/product_files/product/<int:product_id>', methods=['GET'])
+def get_files_by_product(product_id):
+    files = ProductFile.query.filter_by(product_id=product_id).all()
+    return jsonify([file.serialize() for file in files])
